@@ -77,7 +77,7 @@ export class Deploy{
         console.log(`AppManagerAddress:${contractAddressMgr.AppManagerAddress}`);
         contractAddressMgr.CoAddress = await this.deployContract(ContractName.Co,this.address,contractAddressMgr.AppManagerAddress,1000*Math.pow(10,9),0);
         console.log(`CoAddress:${contractAddressMgr.CoAddress}`);
-        contractAddressMgr.FdTokenAddress = await this.deployContract(ContractName.FdToken,this.address,contractAddressMgr.AppManagerAddress,_projectInfoD.projTokenName,8,_projectInfoD.projTokenSymbol);
+        contractAddressMgr.FdTokenAddress = await this.deployContract(ContractName.FdToken,this.address,contractAddressMgr.AppManagerAddress,_projectInfoD.tokenName,8,_projectInfoD.tokenSymbol);
         console.log(`FdTokenAddress:${contractAddressMgr.FdTokenAddress}`);
         contractAddressMgr.GovernAddress = await this.deployContract(ContractName.GovernShareManager,this.address,contractAddressMgr.AppManagerAddress,contractAddressMgr.FdTokenAddress);
         console.log(`GovernAddress${contractAddressMgr.GovernAddress}`);

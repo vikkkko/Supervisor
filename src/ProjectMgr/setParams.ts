@@ -22,7 +22,7 @@ export class SetParams{
     public async startJob(){
         const job: CronJob = new CronJob("*/5 * * * * *",async()=>{
             try{
-                const data = (await ProjectInfoModel.find({"deployContractFlag":DeployContractFlag.Done,"rewardSetFlag":InitContractFlag.Done,"ratioSetFlag":SetParamsFlag.Executing})) ;
+                const data = (await ProjectInfoModel.find({"deployContractFlag":DeployContractFlag.Done,"reserveTokenSetFlag":InitContractFlag.Done,"ratioSetFlag":SetParamsFlag.Executing})) ;
                 for(let i = 0;i<data.length;i++){
                     if(data[i].ratioSetFlag == SetParamsFlag.Initing)
                         continue;
@@ -52,7 +52,7 @@ export class SetParams{
 
         const job2: CronJob = new CronJob("*/5 * * * * *",async()=>{
             try{
-                const data = (await ProjectInfoModel.find({"deployContractFlag":DeployContractFlag.Done,"rewardSetFlag":InitContractFlag.Done,"ratioSetFlag":SetParamsFlag.Done,"financeStartFlag":SetParamsFlag.Executing})) ;
+                const data = (await ProjectInfoModel.find({"deployContractFlag":DeployContractFlag.Done,"reserveTokenSetFlag":InitContractFlag.Done,"ratioSetFlag":SetParamsFlag.Done,"financeStartFlag":SetParamsFlag.Executing})) ;
                 for(let i = 0;i<data.length;i++){
                     if(data[i].financeStartFlag == SetParamsFlag.Initing)
                         continue;

@@ -22,26 +22,26 @@ export class Init{
     public async startJob(){
         const job: CronJob = new CronJob("*/5 * * * * *",async()=>{
             try{
-                const data = (await ProjectInfoModel.find({"deployContractFlag":DeployContractFlag.Done,"rewardSetFlag":InitContractFlag.Executing})) ; ///合约已经发布完成，但是预发token为4
+                const data = (await ProjectInfoModel.find({"deployContractFlag":DeployContractFlag.Done,"reserveTokenSetFlag":InitContractFlag.Executing})) ; ///合约已经发布完成，但是预发token为4
                 for(let i = 0;i<data.length;i++){
-                    if(data[i].rewardSetFlag == InitContractFlag.Initing)
+                    if(data[i].reserveTokenSetFlag == InitContractFlag.Initing)
                         continue;
                     try{
-                        data[i].rewardSetFlag = InitContractFlag.Initing;
+                        data[i].reserveTokenSetFlag = InitContractFlag.Initing;
                         await data[i].save();
                         if(data[i].type == "daico"){
                             await this.initDaicoContract(data[i]);
-                            data[i].rewardSetFlag = InitContractFlag.Done;
+                            data[i].reserveTokenSetFlag = InitContractFlag.Done;
                             await data[i].save();
                         }
                         else if(data[i].type == "gen"){
                             await this.initDaicoContract(data[i]);
-                            data[i].rewardSetFlag = InitContractFlag.Done;
+                            data[i].reserveTokenSetFlag = InitContractFlag.Done;
                             await data[i].save();
                         }
                     }catch(e){
                         console.log(e);
-                        data[i].rewardSetFlag = InitContractFlag.Executing;
+                        data[i].reserveTokenSetFlag = InitContractFlag.Executing;
                         await data[i].save();
                     }
                 }

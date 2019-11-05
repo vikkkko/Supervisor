@@ -5,11 +5,12 @@ export type ProjectInfoDocument =  mongoose.Document & {
 	projId: string;
 	type: string;
 	platform: string;
-	tokenName: string;
+	fundName: string;
 	adminAddress: string;
-	projTokenName: string;
-	projTokenSymbol: string;
+	tokenName: string;
+	tokenSymbol: string;
 	reserveTokenFlag: string;
+	reserveTokenSetFlag: string;
 	reserveTokenInfo: Array<ReserveTokenInfo>;
 	deployContractFlag: string;
 	rewardSetFlag: string;
@@ -27,11 +28,12 @@ const ProjectInfoSchema = new mongoose.Schema({
 	projId: {type:String,unique:true},
 	type: String,
 	platform: String,
-	tokenName: String,
+	fundName: String,
 	adminAddress: String,
-	projTokenName: String,
-	projTokenSymbol: String,
+	tokenName: String,
+	tokenSymbol: String,
 	reserveTokenFlag: String,
+	reserveTokenSetFlag :String,
 	reserveTokenInfo: Array,
 	deployContractFlag: String,
 	rewardSetFlag: String,
