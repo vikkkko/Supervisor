@@ -11,8 +11,8 @@
         "baseUrl": ".",
         "paths": {
             "*": [
-                "node_modules/*",
                 "node_modules/@types/*",
+                "node_modules/*",
                 "src/types/*"
             ]
         }
