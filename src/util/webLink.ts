@@ -1,17 +1,19 @@
 import Web3 from "web3";
 import { CronJob } from "cron";
+import { ETH_URI } from "./secrets";
 
 class WebLink {
     public web3: Web3;
     public jobs: CronJob[] = [];
     constructor() {
-        this.web3 = new Web3(new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/638c755c81fe495e85debe581520b373"));
+        console.log(`ETH_URI:${ETH_URI}`);
+        this.web3 = new Web3(new Web3.providers.WebsocketProvider(ETH_URI));
     }
 
     public reLink(){
         console.log("正在重连web3");
         this.web3 = null;
-        this.web3 = new Web3(new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/638c755c81fe495e85debe581520b373"));
+        this.web3 = new Web3(new Web3.providers.WebsocketProvider(ETH_URI));
     }
 
     public createJobs(){

@@ -25,20 +25,20 @@ export class ContractAddressMgr{
     public async save(_projId: string){
         await ProjectContractModel.deleteMany({projId:_projId});
         //统一入库
-        const projectContractApp = new ProjectContractModel({projId:_projId,contractName:ContractName.AppManager,contractHash:this.AppManagerAddress});
+        const projectContractApp = new ProjectContractModel({projId:_projId,contractName:ContractName.AppManager,contractHash:this.AppManagerAddress,type:"1"});
         await projectContractApp.save();
 
-        const projectContractCo = new ProjectContractModel({projId:_projId,contractName:ContractName.Co,contractHash:this.CoAddress});
+        const projectContractCo = new ProjectContractModel({projId:_projId,contractName:ContractName.Co,contractHash:this.CoAddress,type:"1"});
         await projectContractCo.save();
 
         
-        const projectContractFdT = new ProjectContractModel({projId:_projId,contractName:ContractName.FdToken,contractHash:this.FdTokenAddress});
+        const projectContractFdT = new ProjectContractModel({projId:_projId,contractName:ContractName.FdToken,contractHash:this.FdTokenAddress,type:"1"});
         await projectContractFdT.save();
 
-        const projectContractGov = new ProjectContractModel({projId:_projId,contractName:ContractName.GovernShareManager,contractHash:this.GovernAddress});
+        const projectContractGov = new ProjectContractModel({projId:_projId,contractName:ContractName.GovernShareManager,contractHash:this.GovernAddress,type:"1"});
         await projectContractGov.save();
 
-        const projectContractTra = new ProjectContractModel({projId:_projId,contractName:ContractName.TradeFundPool,contractHash:this.TradeAddress});
+        const projectContractTra = new ProjectContractModel({projId:_projId,contractName:ContractName.TradeFundPool,contractHash:this.TradeAddress,type:"1"});
         await projectContractTra.save();
     }
 }

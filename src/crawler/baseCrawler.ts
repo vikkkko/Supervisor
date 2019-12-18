@@ -1,4 +1,4 @@
-import { CronJob } from "cron";
+import { CronJob, time } from "cron";
 import {Counter,CounterDocument} from "../models/Counter";
 
 export class BaseCrawler {
@@ -12,7 +12,31 @@ export class BaseCrawler {
 
     public jobs: CronJob[] = [];
 
-    public async startJob(){
+    protected async initCounterDocument(key: string){
+        if(!this.lastUpdateIndex){
+            //先获取当前入库到哪个高度了
+            this.counterDocument = await Counter.findOne({counter:key});
+            console.log(`库中${key}高度:${this.counterDocument.lastUpdateIndex}`);
+            if(this.counterDocument){
+                this.lastUpdateIndex = this.counterDocument.lastUpdateIndex;
+                this.handlerIndex =  this.counterDocument.lastUpdateIndex;
+            }
+            else{
+                this.lastUpdateIndex =  this.initIndex;
+                this.handlerIndex =  this.initIndex;
+                this.counterDocument = new Counter({counter:key,lastUpdateIndex:this.initIndex});
+            }
+        }
+    }
+    
+    protected async saveCounterDocument(timestamp: number){
+        this.counterDocument.lastUpdateIndex = this.handlerIndex;
+        this.counterDocument.timestamp = timestamp;
+        await this.counterDocument.save();
+        this.lastUpdateIndex++;
+    }
+
+    public async start(){
         console.log("start");
     }
 }

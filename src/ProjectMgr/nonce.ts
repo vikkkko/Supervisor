@@ -1,5 +1,5 @@
 
-import {webLink} from "../webLink";
+import {webLink} from "../util/webLink";
 
 class Nonce{
     public currentNonce: number;

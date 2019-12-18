@@ -1,7 +1,7 @@
 import { CronJob, job } from "cron";
 import {ProjectInfoModel,ProjectInfoDocument} from "../models/ProjectInfoModel";
-import {webLink} from "../webLink";
-import {ContractJson} from "../AbiExec";
+import {webLink} from "../util/webLink";
+import {ContractJson} from "../util/AbiExec";
 import {ContractAddressMgr,ContractName, ReserveTokenInfo} from "./contractAddressMgr";
 import {DeployContractFlag} from "./deploy";
 import { now } from "moment";

@@ -21,11 +21,13 @@ export class EventInfo{
     public eventName: string;
     public argsCount: number;
     public argsTypes: string[];
+    public argsIndexeds: boolean[];
 
-    constructor(_eventName: string,_argsCount: number,_argsTypes: string[]){
+    constructor(_eventName: string,_argsCount: number,_argsTypes: string[],_argsIndexeds: boolean[]){
         this.eventName = _eventName;
         this.argsCount = _argsCount;
         this.argsTypes = _argsTypes;
+        this.argsIndexeds = _argsIndexeds;
     }
 }
 
@@ -43,7 +45,8 @@ export class AbiExec{
                     const eventName: string = item.name;
                     let agrsStr: string = "";
                     const inputs: any[] = item.inputs;
-                    const argsTypes: string[]=[];
+                    const argsTypes: string[]=[]; 
+                    const argsIndexeds: boolean[] = [];
                     for(let i = 0 ;i<inputs.length;i++){
                         if(i==0){
                             agrsStr += "(";
@@ -51,6 +54,7 @@ export class AbiExec{
 
                         agrsStr += inputs[i].type;
                         argsTypes.push(inputs[i].type);
+                        argsIndexeds.push(inputs[i].indexed);
                         if(i==inputs.length-1){
                             agrsStr += ")"; 
                         }
@@ -61,7 +65,7 @@ export class AbiExec{
                     const str = eventName+agrsStr;
 
                     const sha3 = webLink.web3.utils.sha3(str);
-                    Eventmap.set(sha3,new EventInfo(eventName,inputs.length,argsTypes));
+                    Eventmap.set(sha3,new EventInfo(eventName,inputs.length,argsTypes,argsIndexeds));
                     //console.log(`${eventName}:${sha3}`);
                 }
             });

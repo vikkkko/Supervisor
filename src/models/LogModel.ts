@@ -7,6 +7,7 @@ const LogSchema = new mongoose.Schema({
     contractHash:String,
     blockHash: String,
     blockNumber: Number,
+    timestamp:Number,
     data: String,
     logIndex: Number,
     removed:Boolean,

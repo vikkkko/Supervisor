@@ -12,9 +12,9 @@ import bluebird from "bluebird";
 import { MONGODB_URI, SESSION_SECRET } from "./util/secrets";
 import {blockCrawler} from "./crawler/blockCrawler";
 import {transactionCrawler} from "./crawler/transactionCrawler";
-import {AbiExec} from "./AbiExec";
+import {AbiExec} from "./util/AbiExec";
 import {projectMgr} from "./ProjectMgr/projectMgr";
-import {webLink} from "./webLink";
+import {webLink} from "./util/webLink";
 
 const MongoStore = mongo(session);
 
@@ -37,8 +37,8 @@ const mongoUrl = MONGODB_URI;
 mongoose.Promise = bluebird;
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true } ).then(
     async () => {
-        blockCrawler.startJob();
-        transactionCrawler.startJob();
+        //blockCrawler.start();
+        transactionCrawler.start();
         await projectMgr.startJob();
         /** ready to use. The `mongoose.connect()` promise resolves to undefined. */},
 ).catch(err => {

@@ -1,8 +1,9 @@
-import {webLink} from "../webLink";
+import {webLink} from "../util/webLink";
 import {Deploy} from "./deploy";
 import {Init} from "./init";
 import {SetParams} from "./setParams";
 import {nonce} from "./nonce";
+import {ApprovalProject} from "./approvalProject";
 
 class ProjectMgr{
     private address: string;
@@ -14,10 +15,11 @@ class ProjectMgr{
     }
 
     public async startJob(){
-        await nonce.initNonce(this.address);
-        new Deploy(this.address).startJob();
-        new Init(this.address).startJob();
-        new SetParams(this.address).startJob();
+        new ApprovalProject(this.address).startJob();
+        // await nonce.initNonce(this.address);
+        // new Deploy(this.address).startJob();
+        // new Init(this.address).startJob();
+        // new SetParams(this.address).startJob();
     }
 }
 

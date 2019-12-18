@@ -47,4 +47,4 @@ const ProjectInfoSchema = new mongoose.Schema({
 	contractAddresses : Schema.Types.Mixed,
 }, { timestamps: true });
 
-export const ProjectInfoModel = mongoose.model<ProjectInfoDocument>("daoprojfinanceinfo", ProjectInfoSchema);
+export const ProjectInfoModel = mongoose.model<ProjectInfoDocument>("daoprojinfo", ProjectInfoSchema);
