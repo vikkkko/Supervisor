@@ -3,6 +3,7 @@ import {TransactionDocument,TransactionModel} from "../models/TransactionModel";
 import { LogDocument , LogModel } from "../models/LogModel";
 import { Eventmap } from "../util/AbiExec";
 import _ from "lodash";
+import { try } from "bluebird";
 
 
 export enum EnumProcessResult {
@@ -17,8 +18,13 @@ class Processer {
             const existing = await BlockModel.findOne({hash:block.hash});
             if(!existing){
                 const blockModel: BlockDocument = new BlockModel(block);
-                await blockModel.save();
-                return EnumProcessResult.success;
+                try{
+                    await blockModel.save();
+                    return EnumProcessResult.success;
+                }catch(e){
+                    console.log(e);
+                    return EnumProcessResult.faildDataExistInDB;
+                }
             } else {
                 return EnumProcessResult.faildDataExistInDB;
             }
@@ -32,8 +38,15 @@ class Processer {
             const existing = await TransactionModel.findOne({transactionHash:transaction.hash});
             if(!existing){
                 const transactionDocument: TransactionDocument = new TransactionModel(transaction);
-                await transactionDocument.save();
-                return EnumProcessResult.success;
+                try
+                {
+                    await transactionDocument.save();
+                    return EnumProcessResult.success;
+                }catch(e){
+                    console.log(e);
+                    return EnumProcessResult.faildDataExistInDB;
+                }
+
             } else {
                 return EnumProcessResult.faildDataExistInDB;
             }
