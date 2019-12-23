@@ -1,47 +1,78 @@
 import mongoose, { SchemaTypes, Schema } from "mongoose";
 
+export class ContractInfo{
+    name: string;
+    hash: string;
 
+    constructor(_name: string,_hash: string){
+        this.hash = _hash;
+        this.name = _name;
+    }
+} 
 
 
 export type MolochProjectInfoDocument = mongoose.Document & {
     projId: string;
     projName: string;
-    projTitle: string;
+    projBrief: string;
+    projDetail: string;
+    projCoverUrl: string; //项目封面
     projType: string;
-    description: string;
-    projUrl: string;
-    minimumTrubute: string;
-    shares: number;
-    summonerAddress: string;
-    molochAddress: string;
-    guildBankAddress: string;
+    projVersion: string;
+    officailWeb: string; //官网
+    fundHash: string;
+    fundSymbol: string;
+    fundDecimals: number;
+    votePeriod: string;
+    notePeriod: string;
+    cancelPeriod: string;
     periodDuration: string;
     votingPeriodLength: string;
-    gracePeriodLength: string;
-    abortWindow: string;
+    notingPeriodLength: string;
+    cancelPeriodLength: string;
     proposalDeposit: string;
-    processingReward: string;
-    approvedToken: string;
+    proposalReward: string;
+    summonerAddress: string;
+    contractHashs: Array<ContractInfo>;
+    fundTotal: string;
+    tokenTotal: string;
+    hasTokenCount: number;
+    time: number;
+    lastUpdateTime: number;
+    discussCount: number;
+    startTime: number;
 };
 
 const MolochProjectInfoSchema = new mongoose.Schema({
 	projId: {type:String,unique:true},
-    projName : String,
-    projTitle : String,
-    projType : String,
-    description : String,
-    projUrl : String,
-    minimumTrubute : String,
-    shares : Number,
-    summonerAddress : String,
-    molochAddress : String,
-    guildBankAddress : String,
+    projName: String,
+    projBrief: String,
+    proDetail: String,
+    projCoverUrl : String, //项目封面
+    projType: String,
+    projVersion : String,
+    officailWeb : String, //官网
+    fundHash : String,
+    fundSymbol : String,
+    fundDecimals : Number,
+    votePeriod : String,
+    notePeriod : String,
+    cancelPeriod : String,
     periodDuration : String,
     votingPeriodLength : String,
-    gracePeriodLength : String,
+    notingPeriodLength : String,
+    cancelPeriodLength : String,
     proposalDeposit : String,
-    processingReward : String,
-    approvedToken : String
+    proposalReward : String,
+    summonerAddress: String,
+    contractHashs : Array,
+    fundTotal : String,
+    tokenTotal : String,
+    hasTokenCount : Number,
+    time : Number,
+    lastUpdateTime : Number,
+    discussCount : Number,
+    startTime : Number,
 }, { timestamps: true });
 
 export const MolochProjectInfoModel = mongoose.model<MolochProjectInfoDocument>("moloprojinfos", MolochProjectInfoSchema);

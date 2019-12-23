@@ -3,6 +3,7 @@ export type PendingApprovalProjectDocument = mongoose.Document & {
     projType: string;
     projId: string;
     projName: string;
+    projVersion: string;
     projDescription: string;
     molochDaoAddress: string;
     projUrl: string;
@@ -17,6 +18,7 @@ const PendingApprovalProjectSchema = new mongoose.Schema({
     projType: String,
     projId:String,
     projName:String,
+    projVersion : String,
     projDescription: String,
     molochDaoAddress: String,
     projUrl: String,

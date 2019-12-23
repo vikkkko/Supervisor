@@ -24,13 +24,18 @@ class TransactionCrawler extends BaseCrawler{
     
                 this.handlerIndex ++;
                 //先查看这个高度出了没有
-                const count = await webLink.web3.eth.getBlockNumber();
-                if(this.handlerIndex > count){
+                // const count = await webLink.web3.eth.getBlockNumber();
+                // if(this.handlerIndex > count){
+                //     this.handlerIndex --;
+                //     return;
+                // }
+
+                //这个高度的block出了，获取这个高度的block中的交易数量
+                const block: BlockDocument = (await webLink.web3.eth.getBlock(this.handlerIndex)) as BlockDocument;
+                if(isNull(block)){
                     this.handlerIndex --;
                     return;
                 }
-                //这个高度的block出了，获取这个高度的block中的交易数量
-                const block: BlockDocument = (await webLink.web3.eth.getBlock(this.handlerIndex)) as BlockDocument;
 
                 const transactionCount: number =  await webLink.web3.eth.getBlockTransactionCount(this.handlerIndex);
                 let _count = 0;
@@ -50,7 +55,7 @@ class TransactionCrawler extends BaseCrawler{
                             _.assignIn(transaction,receipt);
                             const r: EnumProcessResult = await processer.processTransaction(transaction);
                             switch (r) {
-                                case EnumProcessResult.success :
+                                case EnumProcessResult.success:
                                     //入库logs
                                     const logs: Log[] = transaction.logs;
                                     if(!isNull(logs)){

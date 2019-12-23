@@ -2,7 +2,7 @@
 import {webLink} from "../util/webLink";
 import { CronJob } from "cron";
 import {PendingApprovalProjectDocument ,PendingApprovalProjectModel} from "../models/PendingApprovalProjectModel";
-import {MolochProjectInfoModel,MolochProjectInfoDocument} from "../models/MolochProjectInfoModel";
+import {MolochProjectInfoModel,MolochProjectInfoDocument, ContractInfo} from "../models/MolochProjectInfoModel";
 import {ContractJson} from "../util/AbiExec";
 import _ from "lodash";
 import { now } from "moment";
@@ -16,6 +16,9 @@ import { Log } from "web3/types";
 import { LogDocument } from "../models/LogModel";
 import { ProjectContractModel } from "../models/ProjectContractModel";
 import {BlockModel,BlockDocument} from "../models/BlockModel";
+import { Int32 } from "bson";
+import { promises } from "dns";
+import Contract from "web3/eth/contract";
 
 export const ApproveFlag = {
     New : "4",
@@ -33,6 +36,13 @@ interface MolochParams {
     approvedToken: string;
     guildBankAddress: string;
 }
+
+interface ApprovedTokenParams {
+    contractHash: string;
+    decimals: number;
+    symbol: string;
+}
+
 export class ApprovalProject{
     private address: string;
 
@@ -49,36 +59,49 @@ export class ApprovalProject{
                 p.approved = ApproveFlag.Approving;
                 await p.save();
                 const molochParams = await this.GetMolochParams(p.molochDaoAddress);
+                const erc20Params = await this.GetErc20Params(molochParams.approvedToken);
                 const molochProjInfo: MolochProjectInfoDocument = {
                     projId: p.projId,
                     projName: p.projName,
-                    projTitle: p.projName,
+                    projBrief: p.projName,
+                    projDetail: p.description,
+                    projCoverUrl : "",
                     projType: p.projType,
-                    description: p.description,
-                    projUrl: p.projType,
-                    minimumTrubute: p.minimumTribute,
-                    shares: 0,
-                    summonerAddress: p.summoner,
-                    molochAddress: p.molochDaoAddress,
-                    guildBankAddress: molochParams.guildBankAddress,
-                    periodDuration: molochParams.periodDuration,
-                    votingPeriodLength: molochParams.votingPeriodLength,
-                    gracePeriodLength: molochParams.gracePeriodLength,
-                    abortWindow: molochParams.abortWindow,
+                    projVersion : p.projVersion,
+                    officailWeb : p.projUrl,
+                    fundHash : molochParams.approvedToken,
+                    fundSymbol : erc20Params.symbol,
+                    fundDecimals : erc20Params.decimals,
+                    votePeriod : (Number.parseInt(molochParams.periodDuration) * Number.parseInt(molochParams.votingPeriodLength)).toString(),
+                    notePeriod : (Number.parseInt(molochParams.periodDuration) * Number.parseInt(molochParams.gracePeriodLength)).toString(),
+                    cancelPeriod : (Number.parseInt(molochParams.periodDuration) * Number.parseInt(molochParams.abortWindow)).toString(),
+                    periodDuration : molochParams.periodDuration,
+                    votingPeriodLength : molochParams.votingPeriodLength,
+                    notingPeriodLength : molochParams.gracePeriodLength,
+                    cancelPeriodLength : molochParams.abortWindow,
                     proposalDeposit : molochParams.proposalDeposit,
-                    processingReward : molochParams.processingReward,
-                    approvedToken : molochParams.approvedToken
+                    proposalReward : molochParams.processingReward,
+                    summonerAddress: p.summoner,
+                    contractHashs : [new ContractInfo("moloch",p.molochDaoAddress),new ContractInfo("guildBank",molochParams.guildBankAddress)],
+                    fundTotal : "0",
+                    tokenTotal : "",
+                    hasTokenCount : 0,
+                    time : 0,
+                    lastUpdateTime : 0,
+                    discussCount : 0,
+                    startTime : 0
                 } as MolochProjectInfoDocument;
                 //存入项目表
                 const molochProjectInfo = new MolochProjectInfoModel(molochProjInfo);
                 await molochProjectInfo.save();
                 //把相关合约存起来
-                const molochContract = new ProjectContractModel({projId:p.projId,contractName:"moloch",contractHash:p.molochDaoAddress,type:"1"});
+                const molochContract = new ProjectContractModel({projId:p.projId,contractName:"moloch",contractHash:p.molochDaoAddress.toLowerCase(),type:"1"});
                 await molochContract.save();
-                const guildBankContract = new ProjectContractModel({projId:p.projId,contractName:"guildBank",contractHash:molochParams.guildBankAddress,type:"1"});
+                const guildBankContract = new ProjectContractModel({projId:p.projId,contractName:"guildBank",contractHash:molochParams.guildBankAddress.toLowerCase(),type:"1"});
                 await guildBankContract.save();
                 //获取这个项目之前已经存在的交易并分析进入logs中
-                await this.GetAndProcessLogs(p.molochDaoAddress);
+                await this.GetAndProcessLogs(p.molochDaoAddress.toLowerCase());
+                await this.GetAndProcessLogs(molochParams.guildBankAddress.toLowerCase());
                 p.approved = ApproveFlag.Approved;
                 await p.save();
             } catch(e) {
@@ -108,9 +131,11 @@ export class ApprovalProject{
                 return;
             for(let i =0;i<records.length;i++){
                 let data = "";
-                records[i].data.forEach((d: string) => {
-                    data += d;
-                });
+                if(records[i].data){
+                    records[i].data.forEach((d: string) => {
+                        data += d;
+                    });
+                }
                 const log: LogDocument = {
                     address : records[i].address,
                     blockHash : records[i].blockHash,
@@ -122,11 +147,11 @@ export class ApprovalProject{
                     transactionIndex : records[i].transactionIndex,
                 } as LogDocument;
                 //查询这个log要不要处理（目前只处理我们记录在案的合约，太多的话处理太慢）
-                const needProcess = await ProjectContractModel.findOne({contractHash:log.address});
-                if(needProcess){
+                //const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
+                //if(needProcess){
                     const block: BlockDocument = (await webLink.web3.eth.getBlock(records[i].blockNumber)) as BlockDocument;
                     await processer.processLog(log,block.timestamp);
-                }
+                //}
             }
         }
     }
@@ -143,5 +168,13 @@ export class ApprovalProject{
         const approvedToken = await contract.methods.approvedToken().call({from:this.address});
         const guildBankAddress = await contract.methods.guildBank().call({from:this.address});
         return {periodDuration,votingPeriodLength,gracePeriodLength,abortWindow,proposalDeposit,processingReward,approvedToken,guildBankAddress};
+    }
+
+    public async GetErc20Params(contractHash: string): Promise<ApprovedTokenParams>{
+        const abi: JSON[] = ContractJson.get("ERC20").abi;
+        const contract = new webLink.web3.eth.Contract(abi,contractHash);
+        const decimals = await contract.methods.decimals().call();
+        const symbol = "";
+        return {contractHash,decimals,symbol};
     }
 }

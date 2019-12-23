@@ -38,7 +38,7 @@ mongoose.Promise = bluebird;
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true } ).then(
     async () => {
         //blockCrawler.start();
-        transactionCrawler.start();
+        //transactionCrawler.start();
         await projectMgr.startJob();
         /** ready to use. The `mongoose.connect()` promise resolves to undefined. */},
 ).catch(err => {
