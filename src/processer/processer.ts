@@ -3,7 +3,6 @@ import {TransactionDocument,TransactionModel} from "../models/TransactionModel";
 import { LogDocument , LogModel } from "../models/LogModel";
 import { Eventmap } from "../util/AbiExec";
 import _ from "lodash";
-import { try } from "bluebird";
 
 
 export enum EnumProcessResult {
