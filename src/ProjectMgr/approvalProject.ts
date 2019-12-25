@@ -55,6 +55,7 @@ export class ApprovalProject{
             const p: PendingApprovalProjectDocument= await PendingApprovalProjectModel.findOne({approved:ApproveFlag.New});
             if(isNull(p))
                 return;
+            console.log(`description:${p.description}`);
             try{
                 p.approved = ApproveFlag.Approving;
                 await p.save();
@@ -63,7 +64,7 @@ export class ApprovalProject{
                 const molochProjInfo: MolochProjectInfoDocument = {
                     projId: p.projId,
                     projName: p.projName,
-                    projBrief: p.projName,
+                    projBrief: p.projTitle,
                     projDetail: p.description,
                     projCoverUrl : "",
                     projType: p.projType,
