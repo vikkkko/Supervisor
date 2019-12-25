@@ -95,9 +95,9 @@ export class ApprovalProject{
                 const molochProjectInfo = new MolochProjectInfoModel(molochProjInfo);
                 await molochProjectInfo.save();
                 //把相关合约存起来
-                const molochContract = new ProjectContractModel({projId:p.projId,contractName:"moloch",contractHash:p.molochDaoAddress.toLowerCase(),type:"1"});
+                const molochContract = new ProjectContractModel({projId:p.projId,contractName:"moloch",contractHash:p.molochDaoAddress.toLowerCase(),type:"1",fundDecimals:erc20Params.decimals});
                 await molochContract.save();
-                const guildBankContract = new ProjectContractModel({projId:p.projId,contractName:"guildBank",contractHash:molochParams.guildBankAddress.toLowerCase(),type:"1"});
+                const guildBankContract = new ProjectContractModel({projId:p.projId,contractName:"guildBank",contractHash:molochParams.guildBankAddress.toLowerCase(),type:"1",fundDecimals:erc20Params.decimals});
                 await guildBankContract.save();
                 //获取这个项目之前已经存在的交易并分析进入logs中
                 await this.GetAndProcessLogs(p.molochDaoAddress.toLowerCase());
