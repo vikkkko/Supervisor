@@ -82,7 +82,7 @@ export class ApprovalProject{
                     cancelPeriodLength : molochParams.abortWindow,
                     proposalDeposit : molochParams.proposalDeposit,
                     proposalReward : molochParams.processingReward,
-                    summonerAddress: p.summoner,
+                    summonerAddress: p.summoner.toLowerCase(),
                     contractHashs : [new ContractInfo("moloch",p.molochDaoAddress),new ContractInfo("guildBank",molochParams.guildBankAddress)],
                     fundTotal : "0",
                     tokenTotal : "",

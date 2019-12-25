@@ -79,7 +79,7 @@ class Processer {
 
 
                 const logExtend = {
-                    contractHash:log.address,
+                    contractHash:log.address.toLowerCase(),
                     event:eventinfo.eventName,
                     argsCount:eventinfo.argsCount,
                     argsTypes:eventinfo.argsTypes,
