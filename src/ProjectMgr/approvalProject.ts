@@ -114,7 +114,8 @@ export class ApprovalProject{
     }
 
     public async GetAndProcessLogs(contractAddress: string){
-        for(let i =0;i<10;i++){ ///十次妥妥够了
+        let records : any[];
+        for(let i =0;i<15;i++){ ///十次妥妥够了
             const options: https.RequestOptions = {
                 method:"GET",
                 hostname:"web3api.io",
@@ -127,33 +128,35 @@ export class ApprovalProject{
                 }
             };
             const data = await httpHelper.RequestAsync(options);
-            const records: any[] = JSON.parse(data)["payload"]["records"];
-            if(records.length == 0)
+            const _records: any[] = JSON.parse(data)["payload"]["records"];
+            if(_records.length == 0)
                 return;
-            for(let i =0;i<records.length;i++){
-                let data = "";
-                if(records[i].data){
-                    records[i].data.forEach((d: string) => {
-                        data += d;
-                    });
-                }
-                const log: LogDocument = {
-                    address : records[i].address,
-                    blockHash : records[i].blockHash,
-                    blockNumber : records[i].blockNumber,
-                    data : data,
-                    logIndex : records[i].logIndex,
-                    topics : records[i].topics,
-                    transactionHash : records[i].transactionHash,
-                    transactionIndex : records[i].transactionIndex,
-                } as LogDocument;
-                //查询这个log要不要处理（目前只处理我们记录在案的合约，太多的话处理太慢）
-                //const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
-                //if(needProcess){
-                    const block: BlockDocument = (await webLink.web3.eth.getBlock(records[i].blockNumber)) as BlockDocument;
-                    await processer.processLog(log,block.timestamp);
-                //}
+            records = records.concat(_records);
+        }
+        console.log(`records.length:${records.length}`);
+        for(let i =0;i<records.length;i++){
+            let data = "";
+            if(records[i].data){
+                records[i].data.forEach((d: string) => {
+                    data += d;
+                });
             }
+            const log: LogDocument = {
+                address : records[i].address,
+                blockHash : records[i].blockHash,
+                blockNumber : records[i].blockNumber,
+                data : data,
+                logIndex : records[i].logIndex,
+                topics : records[i].topics,
+                transactionHash : records[i].transactionHash,
+                transactionIndex : records[i].transactionIndex,
+            } as LogDocument;
+            //查询这个log要不要处理（目前只处理我们记录在案的合约，太多的话处理太慢）
+            //const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
+            //if(needProcess){
+                const block: BlockDocument = (await webLink.web3.eth.getBlock(records[i].blockNumber)) as BlockDocument;
+                await processer.processLog(log,block.timestamp);
+            //}
         }
     }
 
