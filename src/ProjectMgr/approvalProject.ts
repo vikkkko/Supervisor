@@ -114,7 +114,7 @@ export class ApprovalProject{
     }
 
     public async GetAndProcessLogs(contractAddress: string){
-        let records : any[] = [];
+        let records: any[] = [];
         for(let i =0;i<15;i++){ ///十次妥妥够了
             const options: https.RequestOptions = {
                 method:"GET",
@@ -130,7 +130,7 @@ export class ApprovalProject{
             const data = await httpHelper.RequestAsync(options);
             const _records: any[] = JSON.parse(data)["payload"]["records"];
             if(_records.length == 0)
-                return;
+                break;
             records = records.concat(_records);
         }
         console.log(`records.length:${records.length}`);
