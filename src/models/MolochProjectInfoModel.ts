@@ -47,7 +47,7 @@ const MolochProjectInfoSchema = new mongoose.Schema({
 	projId: {type:String,unique:true},
     projName: String,
     projBrief: String,
-    proDetail: String,
+    projDetail: String,
     projCoverUrl : String, //项目封面
     projType: String,
     projVersion : String,
