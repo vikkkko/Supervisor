@@ -14,7 +14,7 @@ import { processer } from "../processer/processer";
 import { TransactionDocument } from "../models/TransactionModel";
 import { Log } from "web3/types";
 import { LogDocument } from "../models/LogModel";
-import { ProjectContractModel } from "../models/ProjectContractModel";
+import { ProjectContractModel ,ProjectContractDocument} from "../models/ProjectContractModel";
 import {BlockModel,BlockDocument} from "../models/BlockModel";
 import { Int32 } from "bson";
 import { promises } from "dns";
@@ -96,15 +96,19 @@ export class ApprovalProject{
                 const molochProjectInfo = new MolochProjectInfoModel(molochProjInfo);
                 await molochProjectInfo.save();
                 //把相关合约存起来
-                const molochContract = new ProjectContractModel({projId:p.projId,contractName:"moloch",contractHash:p.molochDaoAddress.toLowerCase(),type:"1",fundDecimals:erc20Params.decimals});
+                const molochContract : ProjectContractDocument= new ProjectContractModel({projId:p.projId,contractName:"moloch",contractHash:p.molochDaoAddress.toLowerCase(),type:"2",fundDecimals:erc20Params.decimals});
                 await molochContract.save();
-                const guildBankContract = new ProjectContractModel({projId:p.projId,contractName:"guildBank",contractHash:molochParams.guildBankAddress.toLowerCase(),type:"1",fundDecimals:erc20Params.decimals});
+                const guildBankContract : ProjectContractDocument = new ProjectContractModel({projId:p.projId,contractName:"guildBank",contractHash:molochParams.guildBankAddress.toLowerCase(),type:"2",fundDecimals:erc20Params.decimals});
                 await guildBankContract.save();
                 //获取这个项目之前已经存在的交易并分析进入logs中
                 await this.GetAndProcessLogs(p.molochDaoAddress.toLowerCase());
                 await this.GetAndProcessLogs(molochParams.guildBankAddress.toLowerCase());
                 p.approved = ApproveFlag.Approved;
                 await p.save();
+                molochContract.type = "1";
+                await molochContract.save();
+                guildBankContract.type = "1";
+                await guildBankContract.save();
             } catch(e) {
                 console.log(e);
                 p.approved = ApproveFlag.New;
