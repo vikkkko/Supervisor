@@ -66,7 +66,7 @@ export class AbiExec{
 
                     const sha3 = webLink.web3.utils.sha3(str);
                     Eventmap.set(sha3,new EventInfo(eventName,inputs.length,argsTypes,argsIndexeds));
-                    //console.log(`${eventName}:${sha3}`);
+                    console.log(`${sha3}:${str}`);
                 }
             });
         });
