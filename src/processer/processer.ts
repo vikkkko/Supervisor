@@ -3,6 +3,7 @@ import {TransactionDocument,TransactionModel} from "../models/TransactionModel";
 import { LogDocument , LogModel } from "../models/LogModel";
 import { Eventmap } from "../util/AbiExec";
 import _ from "lodash";
+import { isNull } from "util";
 
 
 export enum EnumProcessResult {
@@ -59,36 +60,37 @@ class Processer {
             const existing = await LogModel.findOne({transactionHash:log.transactionHash,logIndex:log.logIndex});
             if(!existing){
                 const eventinfo = Eventmap.get(log.topics[0]);
-                const args: any[] = [];
-                let topics = log.topics.slice(1);
-                let datas = [];
-                const str = log.data.replace("0x","");
-                for(let i =0;i<str.length /64;i++){
-                    datas.push(`0x${str.substr(i*64,64)}`);
-                }
-
-                for(let i = 0;i<eventinfo.argsIndexeds.length;i++){
-                    if(eventinfo.argsIndexeds[i] == true){
-                        args.push(topics[0]);
-                        topics = topics.slice(1);
-                    } else {
-                        args.push(datas[0]);
-                        datas = datas.slice(1);
+                if(!isNull(eventinfo)){
+                    const args: any[] = [];
+                    let topics = log.topics.slice(1);
+                    let datas = [];
+                    const str = log.data.replace("0x","");
+                    for(let i =0;i<str.length /64;i++){
+                        datas.push(`0x${str.substr(i*64,64)}`);
                     }
+    
+                    for(let i = 0;i<eventinfo.argsIndexeds.length;i++){
+                        if(eventinfo.argsIndexeds[i] == true){
+                            args.push(topics[0]);
+                            topics = topics.slice(1);
+                        } else {
+                            args.push(datas[0]);
+                            datas = datas.slice(1);
+                        }
+                    }
+
+                    const logExtend = {
+                        contractHash:log.address.toLowerCase(),
+                        event:eventinfo.eventName,
+                        argsCount:eventinfo.argsCount,
+                        argsTypes:eventinfo.argsTypes,
+                        args:args,
+                        timestamp:timestamp
+                    };
+                    _.assignIn(log,logExtend);
+                    const logDocument = new LogModel(log);
+                    await logDocument.save();
                 }
-
-
-                const logExtend = {
-                    contractHash:log.address.toLowerCase(),
-                    event:eventinfo.eventName,
-                    argsCount:eventinfo.argsCount,
-                    argsTypes:eventinfo.argsTypes,
-                    args:args,
-                    timestamp:timestamp
-                };
-                _.assignIn(log,logExtend);
-                const logDocument = new LogModel(log);
-                await logDocument.save();
             } else {
                 return EnumProcessResult.faildDataExistInDB;
             }

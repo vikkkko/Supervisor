@@ -62,11 +62,11 @@ class TransactionCrawler extends BaseCrawler{
                                         for(let i = 0 ; i<logs.length;i++){
                                             const log: LogDocument = logs[i] as LogDocument;
                                             //查询这个log要不要处理（目前只处理我们记录在案的合约，太多的话处理太慢）
-                                            const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
+                                            //const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
                                             //console.log(`${log.address}:${needProcess}`);
-                                            if(needProcess){
+                                            //if(needProcess){
                                                 await processer.processLog(log,block.timestamp);
-                                            }
+                                            //}
                                         }
                                     }
                                     break;
