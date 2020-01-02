@@ -60,7 +60,7 @@ class Processer {
             const existing = await LogModel.findOne({transactionHash:log.transactionHash,logIndex:log.logIndex});
             if(!existing){
                 const eventinfo = Eventmap.get(log.topics[0]);
-                if(!isNull(eventinfo)){
+                if(eventinfo){
                     const args: any[] = [];
                     let topics = log.topics.slice(1);
                     let datas = [];
