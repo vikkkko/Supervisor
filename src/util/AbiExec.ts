@@ -1,6 +1,7 @@
 import fs from "fs";
 import Web3 from "web3";
 import {webLink} from "./webLink";
+import {EventInfoModel,EventInfoDocument} from "../models/MolochProjectEventInfo";
 
 export const Eventmap: Map<string,EventInfo> = new Map();
 
@@ -34,18 +35,19 @@ export class EventInfo{
 export class AbiExec{
     public Init() {
         const files = fs.readdirSync("./src/contractJson/");
-        files.forEach(fileName => {
+        files.forEach(async fileName => {
             const file: string = fs.readFileSync("./src/contractJson/"+fileName,{encoding:"utf-8"});
             const jsonFile: any = JSON.parse(file);
             const abi: any[] = jsonFile.abi;
             const bytecode: string = jsonFile.bytecode;
             ContractJson.set(jsonFile.contractName,new ContractSimpleInfo(abi,bytecode));
-            abi.forEach(item => {
+            abi.forEach(async item => {
                 if(item.type == "event"){
                     const eventName: string = item.name;
                     let agrsStr: string = "";
                     const inputs: any[] = item.inputs;
                     const argsTypes: string[]=[]; 
+                    const argsNames: string[]=[]; 
                     const argsIndexeds: boolean[] = [];
                     for(let i = 0 ;i<inputs.length;i++){
                         if(i==0){
@@ -54,6 +56,7 @@ export class AbiExec{
 
                         agrsStr += inputs[i].type;
                         argsTypes.push(inputs[i].type);
+                        argsNames.push(inputs[i].name);
                         argsIndexeds.push(inputs[i].indexed);
                         if(i==inputs.length-1){
                             agrsStr += ")"; 
@@ -66,6 +69,14 @@ export class AbiExec{
 
                     const sha3 = webLink.web3.utils.sha3(str);
                     Eventmap.set(sha3,new EventInfo(eventName,inputs.length,argsTypes,argsIndexeds));
+                    const eventInfoDocument: EventInfoDocument = {
+                        hash : sha3,
+                        event : eventName,
+                        fields : argsNames,
+                        types : argsTypes
+                    } as EventInfoDocument;
+                    const eventInfoM = new EventInfoModel(eventInfoDocument);
+                    await eventInfoM.save();
                     console.log(`${sha3}:${str}`);
                 }
             });
