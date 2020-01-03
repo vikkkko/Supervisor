@@ -181,8 +181,14 @@ export class ApprovalProject{
     public async GetErc20Params(contractHash: string): Promise<ApprovedTokenParams>{
         const abi: JSON[] = ContractJson.get("ERC20").abi;
         const contract = new webLink.web3.eth.Contract(abi,contractHash);
-        const decimals = await contract.methods.decimals().call();
-        const symbol = "";
+        let decimals = 8;
+        let symbol = "";
+        try{
+            decimals = await contract.methods.decimals().call();
+            symbol = await contract.methods.symbol().call();
+        }catch(e){
+            console.log(e);
+        }
         return {contractHash,decimals,symbol};
     }
 }
