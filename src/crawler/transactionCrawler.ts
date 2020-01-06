@@ -90,6 +90,7 @@ class TransactionCrawler extends BaseCrawler{
             }
             catch(e){
                 console.log(`交易：${e}`);
+                this.handlerIndex --;
                 webLink.reLink();
             }
         },null,true);
