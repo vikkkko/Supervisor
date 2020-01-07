@@ -19,6 +19,7 @@ import {BlockModel,BlockDocument} from "../models/BlockModel";
 import { Int32 } from "bson";
 import { promises } from "dns";
 import Contract from "web3/eth/contract";
+import {lock} from "../util/Lock";
 
 export const ApproveFlag = {
     New : "4",
@@ -156,11 +157,11 @@ export class ApprovalProject{
                 transactionIndex : records[i].transactionIndex,
             } as LogDocument;
             //查询这个log要不要处理（目前只处理我们记录在案的合约，太多的话处理太慢）
-            //const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
-            //if(needProcess){
+            const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
+            if(needProcess){
                 const block: BlockDocument = (await webLink.web3.eth.getBlock(records[i].blockNumber)) as BlockDocument;
-                await processer.processLog(log,block.timestamp);
-            //}
+                await lock.acquire("log",async ()=>{await processer.processLog(log,block.timestamp);});
+            }
         }
     }
 

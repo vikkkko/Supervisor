@@ -11,6 +11,7 @@ import {webLink} from "../util/webLink";
 import { isNull } from "util";
 import { EnumProcessResult , processer} from "../processer/processer";
 import {BlockModel,BlockDocument} from "../models/BlockModel";
+import { lock } from "../util/Lock";
 
 class TransactionCrawler extends BaseCrawler{
     public async start(){
@@ -62,11 +63,11 @@ class TransactionCrawler extends BaseCrawler{
                                         for(let i = 0 ; i<logs.length;i++){
                                             const log: LogDocument = logs[i] as LogDocument;
                                             //查询这个log要不要处理（目前只处理我们记录在案的合约，太多的话处理太慢）
-                                            //const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
-                                            //console.log(`${log.address}:${needProcess}`);
-                                            //if(needProcess){
-                                                await processer.processLog(log,block.timestamp);
-                                            //}
+                                            const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
+                                            console.log(`${log.address}:${needProcess}`);
+                                            if(needProcess){
+                                                await lock.acquire("log",async ()=>{await processer.processLog(log,block.timestamp);});
+                                            }
                                         }
                                     }
                                     break;

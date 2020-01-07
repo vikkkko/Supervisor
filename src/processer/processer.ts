@@ -5,7 +5,6 @@ import { Eventmap } from "../util/AbiExec";
 import _ from "lodash";
 import { isNull } from "util";
 
-
 export enum EnumProcessResult {
     success,
     faildDataExistInDB,
@@ -13,6 +12,7 @@ export enum EnumProcessResult {
 }
 
 class Processer {
+
     public async processBlock(block: BlockDocument): Promise<EnumProcessResult> {
         if(block){
             const existing = await BlockModel.findOne({hash:block.hash});
@@ -57,6 +57,7 @@ class Processer {
 
     public async processLog(log: LogDocument,timestamp: number): Promise<EnumProcessResult> {
         if(log){
+            let logCounter = await LogModel.count({});
             const existing = await LogModel.findOne({transactionHash:log.transactionHash,logIndex:log.logIndex});
             if(!existing){
                 const eventinfo = Eventmap.get(log.topics[0]);
@@ -80,6 +81,7 @@ class Processer {
                     }
 
                     const logExtend = {
+                        counter : logCounter,
                         contractHash:log.address.toLowerCase(),
                         event:eventinfo.eventName,
                         argsCount:eventinfo.argsCount,

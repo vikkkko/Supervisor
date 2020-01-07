@@ -3,6 +3,7 @@ import { Log } from "web3/types";
 export type LogDocument = Log & mongoose.Document;
 
 const LogSchema = new mongoose.Schema({
+    counter:Number,
     address: String,
     contractHash:String,
     blockHash: String,
