@@ -16,7 +16,6 @@ export class BaseCrawler {
         if(!this.lastUpdateIndex){
             //先获取当前入库到哪个高度了
             this.counterDocument = await Counter.findOne({counter:key});
-            console.log(`库中${key}高度:${this.counterDocument.lastUpdateIndex}`);
             if(this.counterDocument){
                 this.lastUpdateIndex = this.counterDocument.lastUpdateIndex;
                 this.handlerIndex =  this.counterDocument.lastUpdateIndex;
