@@ -12,13 +12,13 @@ import * as https from "https";
 import { EnumProcessResult } from "../processer/processer";
 import { processer } from "../processer/processer";
 import { TransactionDocument } from "../models/TransactionModel";
-import { Log } from "web3/types";
+import { Log } from "web3-core";
 import { LogDocument } from "../models/LogModel";
 import { ProjectContractModel ,ProjectContractDocument} from "../models/ProjectContractModel";
 import {BlockModel,BlockDocument} from "../models/BlockModel";
 import { Int32 } from "bson";
 import { promises } from "dns";
-import Contract from "web3/eth/contract";
+import Contract from "web3-core";
 import {lock} from "../util/Lock";
 
 export const ApproveFlag = {
@@ -159,8 +159,8 @@ export class ApprovalProject{
             //查询这个log要不要处理（目前只处理我们记录在案的合约，太多的话处理太慢）
             const needProcess = await ProjectContractModel.findOne({contractHash:log.address.toLowerCase()});
             if(needProcess){
-                const block: BlockDocument = (await webLink.web3.eth.getBlock(records[i].blockNumber)) as BlockDocument;
-                await lock.acquire("log",async ()=>{await processer.processLog(log,block.timestamp);});
+                const block: BlockDocument = (await webLink.web3.eth.getBlock(records[i].blockNumber,true)) as BlockDocument;
+                await lock.acquire("log",async ()=>{await processer.processLog(log,block.timestamp as number);});
             }
         }
     }

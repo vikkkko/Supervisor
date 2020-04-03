@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { Block} from "web3/eth/types";
-export type BlockDocument = Block & mongoose.Document;
+import { BlockTransactionObject} from "web3-eth";
+export type BlockDocument = BlockTransactionObject & mongoose.Document;
 
 const BlockSchema = new mongoose.Schema({
     difficulty: String,

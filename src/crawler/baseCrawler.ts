@@ -30,7 +30,7 @@ export class BaseCrawler {
     
     protected async saveCounterDocument(timestamp: number){
         this.counterDocument.lastUpdateIndex = this.handlerIndex;
-        this.counterDocument.timestamp = timestamp;
+        this.counterDocument.timestamp =  timestamp;
         await this.counterDocument.save();
         this.lastUpdateIndex++;
     }

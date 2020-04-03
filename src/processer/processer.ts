@@ -57,7 +57,7 @@ class Processer {
 
     public async processLog(log: LogDocument,timestamp: number): Promise<EnumProcessResult> {
         if(log){
-            let logCounter = await LogModel.count({});
+            const logCounter = await LogModel.count({});
             const existing = await LogModel.findOne({transactionHash:log.transactionHash,logIndex:log.logIndex});
             if(!existing){
                 const eventinfo = Eventmap.get(log.topics[0]);

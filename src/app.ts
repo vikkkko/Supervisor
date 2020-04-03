@@ -131,7 +131,6 @@ process.on("uncaughtException", (err) =>{
         console.log("uncaughtException:"+err);
         process.exit(1);
     });
-
 process.on("unhandledRejection", (error: any) => {
     console.error("unhandledRejection", error);
     if(error.code == 11000)

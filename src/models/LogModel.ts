@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Log } from "web3/types";
+import { Log } from "web3-core";
 export type LogDocument = Log & mongoose.Document;
 
 const LogSchema = new mongoose.Schema({

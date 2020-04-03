@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { Transaction} from "web3/eth/types";
-import { TransactionReceipt } from "web3/types";
+import { Transaction} from "web3-core";
+import { TransactionReceipt } from "web3-core";
 
 export type TransactionDocument = TransactionReceipt & Transaction & mongoose.Document;
 

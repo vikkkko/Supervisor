@@ -19,7 +19,7 @@ class BlockCrawler extends BaseCrawler
                     return;
                 this.handlerIndex ++;
                 console.log(`正在处理块，高度：${this.handlerIndex}`);
-                const block: BlockDocument = (await webLink.web3.eth.getBlock(this.handlerIndex)) as BlockDocument;
+                const block: BlockDocument = (await webLink.web3.eth.getBlock(this.handlerIndex,true)) as BlockDocument;
                 const r: EnumProcessResult = await processer.processBlock(block);
                 switch(r){
                     case EnumProcessResult.faildDataIsNull :
@@ -27,7 +27,7 @@ class BlockCrawler extends BaseCrawler
                         break;
                     case EnumProcessResult.success :
                         //更新高度
-                        await super.saveCounterDocument(block.timestamp);
+                        await super.saveCounterDocument(block.timestamp as number);
                         break;
                     case EnumProcessResult.faildDataExistInDB :
                         this.lastUpdateIndex++;
